@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: build
+    volumes:
+      - app-build:/app/dist
+    working_dir: /app
+    env_file:
+      - .env
+    command: yarn run build
+
+  web:
+    depends_on:
+      - app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - app-build:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    env_file:
+      - .env
+
+volumes:
+  app-build:
